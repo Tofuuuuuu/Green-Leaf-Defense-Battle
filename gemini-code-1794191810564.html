@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>綠葉密碼：校園碳匯實境解密與綠葉防衛戰</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2d6a4f;
+            --primary-light: #52b788;
+            --accent: #d8f3dc;
+            --amber: #f4a261;
+            --bg: #f8faf9;
+            --card: #ffffff;
+            --text: #1b4332;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Noto Sans TC', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(45, 106, 79, 0.3);
+        }
+
+        .page {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #2d6a4f, #1b4332);
+            color: white;
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hero-banner h1 { font-size: 1.6rem; margin-bottom: 6px; }
+        .hero-banner p { opacity: 0.9; font-size: 0.9rem; }
+
+        .team-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        /* 任務卡片區 */
+        .quest-section { margin-bottom: 25px; }
+
+        .quest-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border-left: 6px solid var(--primary-light);
+        }
+
+        .quest-card h3 {
+            color: var(--primary);
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quest-card p {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .calc-box {
+            background: #f0f4f1;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .calc-box input {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            width: 120px;
+        }
+
+        .calc-box button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .calc-result {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-left: auto;
+        }
+
+        .big-start-btn {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            width: 100%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(82, 183, 136, 0.4);
+        }
+
+        /* 射擊遊戲區域 */
+        .game-dashboard {
+            background: white;
+            border-radius: 20px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-box { text-align: center; }
+        .stat-box label { font-size: 0.75rem; color: #777; display: block; }
+        .stat-box span { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+
+        .question-card {
+            background: var(--primary);
+            color: white;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
+            min-height: 75px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .question-card label { font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px; }
+        .question-card h2 { font-size: 1.2rem; font-weight: 700; }
+
+        /* 飛刀射擊戰場 */
+        .stage-container {
+            position: relative;
+            height: 360px;
+            background: linear-gradient(to bottom, #d8f3dc, #b7e4c7);
+            border-radius: 20px;
+            border: 4px solid #74c69d;
+            overflow: hidden;
+        }
+
+        .leaf-target {
+            position: absolute;
+            width: 110px;
+            height: 60px;
+            background: #52b788;
+            border-radius: 50px 5px 50px 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85rem;
+            padding: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .leaf-target:active { transform: scale(0.9); }
+
+        .hit-effect {
+            position: absolute;
+            color: #ffb703;
+            font-weight: 900;
+            font-size: 1.5rem;
+            animation: floatUp 0.6s forwards ease-out;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+        }
+
+        .control-panel { margin-top: 15px; text-align: center; }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(45, 106, 79, 0.3);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 25px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .final-score {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--amber);
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-leaf"></i>
+            <span>綠葉密碼：校園碳匯與防衛戰</span>
+        </div>
+        <button class="nav-btn" onclick="switchPage('gamePage')">
+            <i class="fa-solid fa-bullseye"></i> 進入射擊遊戲
+        </button>
+    </header>
+
+    <!-- 學習與實體任務頁 -->
+    <div class="page active" id="learnPage">
+        <div class="hero-banner">
+            <h1>綠葉密碼：校園碳匯實境解密</h1>
+            <p>探索校園植物多樣性與老樹固碳量，挑戰綠葉防衛戰！</p>
+            <span class="team-badge"><i class="fa-solid fa-users"></i> 第二組 專案計畫</span>
+        </div>
+
+        <div class="quest-section">
+            <div class="quest-card">
+                <h3><i class="fa-solid fa-camera"></i> 任務一：iNaturalist 物種辨識</h3>
+                <p>運用手機相機與 iNaturalist 即時辨識木本、灌木與草本植物，建立校園植物數位圖鑑。</p>
+            </div>
+
+            <div class="quest-card">
+                <h3><i class="fa-solid fa-ruler-combined"></i> 任務二：DBH 胸高直徑與固碳量計算</h3>
+                <p>量測代表樹木地上 1.3m 處之胸高直徑 (DBH)，體驗碳匯估測：</p>
+                <div class="calc-box">
+                    <input type="number" id="dbhInput" placeholder="輸入 DBH (cm)" value="25">
+                    <button onclick="calculateCarbon()">試算碳匯</button>
+                    <div class="calc-result" id="carbonResult">估算固碳量: ~147.2 kg</div>
+                </div>
+            </div>
+
+            <div class="quest-card">
+                <h3><i class="fa-solid fa-database"></i> 任務三：10筆標準化資料規範</h3>
+                <p>建置包含 GPS 定位、照片、DBH 量測的標準化名錄，目標綜合評分達 80% 以上！</p>
+            </div>
+        </div>
+
+        <button class="big-start-btn" onclick="switchPage('gamePage')">
+            <i class="fa-solid fa-play"></i> 開啟綠葉防衛戰（射擊挑戰）
+        </button>
+    </div>
+
+    <!-- 綠葉防衛戰（植物飛刀/精準射擊）遊戲頁 -->
+    <div class="page" id="gamePage">
+        <div class="game-dashboard">
+            <div class="stat-box">
+                <label>剩餘時間</label>
+                <span id="timeLeft">30</span>s
+            </div>
+            <div class="stat-box">
+                <label>目前得分</label>
+                <span id="score">0</span>
+            </div>
+            <div class="stat-box">
+                <label>連擊 Combo</label>
+                <span id="combo">0</span>
+            </div>
+        </div>
+
+        <div class="question-card">
+            <label>TARGET CIPHER QUESTION</label>
+            <h2 id="questionText">看清題目，點擊正確的綠葉標籤擊破它！</h2>
+        </div>
+
+        <div class="stage-container" id="stage">
+            <!-- 綠葉目標動態生成 -->
+        </div>
+
+        <div class="control-panel">
+            <button class="btn" id="startBtn" onclick="startGame()">開始綠葉防衛戰</button>
+            <button class="btn" style="background:#6c757d; margin-left:10px;" onclick="switchPage('learnPage')">返回任務說明</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h2>🎉 射擊挑戰完成！</h2>
+            <p>你在綠葉防衛戰中獲得了：</p>
+            <div class="final-score" id="finalScore">0</div>
+            <p id="evalComment" style="margin-bottom:20px; color:#555;"></p>
+            <button class="btn" onclick="closeModal()">再試一次</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "專案中 DBH 量測是指樹木的什麼？", a: "胸高直徑", opt: ["胸高直徑", "樹冠寬度", "根系深度", "樹葉長度"] },
+            { q: "本專案主要使用的辨識 App 是？", a: "iNaturalist", opt: ["iNaturalist", "PlantNet", "Seek", "Google Lens"] },
+            { q: "專案計畫預計產出至少幾筆標準化植物資料？", a: "10筆", opt: ["10筆", "5筆", "20筆", "50筆"] },
+            { q: "專案執行計畫是由第幾組發起？", a: "第二組", opt: ["第二組", "第一組", "第三組", "第四組"] },
+            { q: "評量焦點中的綜合評分目標要達多少%以上？", a: "80%", opt: ["80%", "60%", "70%", "90%"] }
+        ];
+
+        let score = 0;
+        let combo = 0;
+        let timeLeft = 30;
+        let gameTimer = null;
+        let spawnTimer = null;
+        let currentQ = null;
+        let gameActive = false;
+
+        function calculateCarbon() {
+            let dbh = parseFloat(document.getElementById('dbhInput').value) || 0;
+            let carbon = (Math.pow(dbh, 2) * 0.235).toFixed(1);
+            document.getElementById('carbonResult').innerText = `估算固碳量: ~${carbon} kg`;
+        }
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function startGame() {
+            if(gameActive) return;
+            gameActive = true;
+            score = 0;
+            combo = 0;
+            timeLeft = 30;
+            document.getElementById('score').innerText = score;
+            document.getElementById('combo').innerText = combo;
+            document.getElementById('timeLeft').innerText = timeLeft;
+            document.getElementById('startBtn').innerText = '防衛戰進行中...';
+
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeLeft').innerText = timeLeft;
+                if(timeLeft <= 0) endGame();
+            }, 1000);
+
+            nextQuestion();
+            spawnTargets();
+        }
+
+        function nextQuestion() {
+            currentQ = questions[Math.floor(Math.random() * questions.length)];
+            document.getElementById('questionText').innerText = currentQ.q;
+        }
+
+        function spawnTargets() {
+            if(!gameActive) return;
+
+            const stage = document.getElementById('stage');
+            stage.innerHTML = '';
+
+            // 混合選項並生成綠葉氣球
+            let shuffledOpts = [...currentQ.opt].sort(() => Math.random() - 0.5).slice(0, 3);
+            if(!shuffledOpts.includes(currentQ.a)) shuffledOpts[0] = currentQ.a;
+            shuffledOpts.sort(() => Math.random() - 0.5);
+
+            shuffledOpts.forEach((txt, idx) => {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf-target';
+                leaf.innerText = txt;
+                leaf.style.left = `${15 + idx * 28}%`;
+                leaf.style.top = `${20 + Math.random() * 50}%`;
+
+                leaf.addEventListener('pointerdown', (e) => {
+                    if(!gameActive) return;
+                    
+                    if(txt === currentQ.a) {
+                        combo++;
+                        let pts = 100 + (combo * 15);
+                        score += pts;
+                        showEffect(e.clientX, e.clientY, `+${pts}`);
+                    } else {
+                        combo = 0;
+                        showEffect(e.clientX, e.clientY, `X`);
+                    }
+
+                    document.getElementById('score').innerText = score;
+                    document.getElementById('combo').innerText = combo;
+
+                    nextQuestion();
+                    spawnTargets();
+                });
+
+                stage.appendChild(leaf);
+            });
+
+            spawnTimer = setTimeout(() => {
+                if(gameActive) spawnTargets();
+            }, 2500);
+        }
+
+        function showEffect(x, y, text) {
+            const effect = document.createElement('div');
+            effect.className = 'hit-effect';
+            effect.innerText = text;
+            effect.style.left = `${x - 20}px`;
+            effect.style.top = `${y - 40}px`;
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 600);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(gameTimer);
+            clearTimeout(spawnTimer);
+            document.getElementById('stage').innerHTML = '';
+            document.getElementById('startBtn').innerText = '重新開始挑戰';
+
+            document.getElementById('finalScore').innerText = score;
+            let comment = score >= 800 ? "太強了！你成功守護了綠葉碳匯密碼！" : "再接再厲！複習實境任務精準度會更高喔！";
+            document.getElementById('evalComment').innerText = comment;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
