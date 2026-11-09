@@ -56,19 +56,32 @@
         }
 
         .nav-btn {
-            background: var(--primary);
-            color: white;
+            background: #ccc;
+            color: #666;
             border: none;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: bold;
-            cursor: pointer;
+            cursor: not-allowed;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .nav-btn.unlocked {
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
             box-shadow: 0 4px 10px rgba(45, 106, 79, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .page {
@@ -103,7 +116,6 @@
             margin-top: 8px;
         }
 
-        /* 任務卡片區 */
         .quest-section { margin-bottom: 25px; }
 
         .quest-card {
@@ -112,16 +124,51 @@
             padding: 20px;
             margin-bottom: 15px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            border-left: 6px solid var(--primary-light);
+            border-left: 6px solid #ccc;
+            opacity: 0.6;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .quest-card.active-quest {
+            border-left-color: var(--primary-light);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .quest-card.completed {
+            border-left-color: var(--primary);
+            background: #fdfdfd;
+            opacity: 1;
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
         .quest-card h3 {
             color: var(--primary);
             font-size: 1.15rem;
-            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            background: #eee;
+            color: #777;
+            font-weight: bold;
+        }
+
+        .quest-card.completed .status-badge {
+            background: var(--accent);
+            color: var(--primary);
         }
 
         .quest-card p {
@@ -131,10 +178,36 @@
             margin-bottom: 12px;
         }
 
-        .calc-box {
+        .interactive-area {
             background: #f0f4f1;
             padding: 15px;
             border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .plant-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .plant-tag {
+            background: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid #ddd;
+            color: #888;
+        }
+
+        .plant-tag.found {
+            background: var(--primary-light);
+            color: white;
+            border-color: var(--primary-light);
+            font-weight: bold;
+        }
+
+        .calc-box {
             display: flex;
             gap: 10px;
             align-items: center;
@@ -146,10 +219,10 @@
             border: 1px solid #ccc;
             border-radius: 8px;
             font-size: 0.95rem;
-            width: 120px;
+            width: 140px;
         }
 
-        .calc-box button {
+        .action-btn {
             background: var(--primary);
             color: white;
             border: none;
@@ -157,30 +230,34 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .calc-result {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 0.95rem;
-            margin-left: auto;
-        }
+        .action-btn:active { transform: scale(0.95); }
 
         .big-start-btn {
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
-            color: white;
+            background: #ccc;
+            color: #666;
             border: none;
             padding: 16px 32px;
             font-size: 1.2rem;
             font-weight: bold;
             border-radius: 30px;
             width: 100%;
-            cursor: pointer;
+            cursor: not-allowed;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .big-start-btn.unlocked {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            cursor: pointer;
             box-shadow: 0 6px 20px rgba(82, 183, 136, 0.4);
+            animation: pulse 1.5s infinite;
         }
 
         /* 射擊遊戲區域 */
@@ -217,7 +294,6 @@
         .question-card label { font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px; }
         .question-card h2 { font-size: 1.2rem; font-weight: 700; }
 
-        /* 飛刀射擊戰場 */
         .stage-container {
             position: relative;
             height: 360px;
@@ -243,10 +319,7 @@
             text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             cursor: pointer;
-            transition: transform 0.1s;
         }
-
-        .leaf-target:active { transform: scale(0.9); }
 
         .hit-effect {
             position: absolute;
@@ -316,47 +389,71 @@
             <i class="fa-solid fa-leaf"></i>
             <span>綠葉密碼：校園碳匯與防衛戰</span>
         </div>
-        <button class="nav-btn" onclick="switchPage('gamePage')">
-            <i class="fa-solid fa-bullseye"></i> 進入射擊遊戲
+        <button class="nav-btn" id="navGameBtn">
+            <i class="fa-solid fa-lock"></i> 遊戲未解鎖
         </button>
     </header>
 
-    <!-- 學習與實體任務頁 -->
     <div class="page active" id="learnPage">
         <div class="hero-banner">
             <h1>綠葉密碼：校園碳匯實境解密</h1>
-            <p>探索校園植物多樣性與老樹固碳量，挑戰綠葉防衛戰！</p>
+            <p>請依序完成任務一、二、三，即可解鎖終極綠葉防衛戰！</p>
             <span class="team-badge"><i class="fa-solid fa-users"></i> 第二組 專案計畫</span>
         </div>
 
         <div class="quest-section">
-            <div class="quest-card">
-                <h3><i class="fa-solid fa-camera"></i> 任務一：iNaturalist 物種辨識</h3>
-                <p>運用手機相機與 iNaturalist 即時辨識木本、灌木與草本植物，建立校園植物數位圖鑑。</p>
-            </div>
-
-            <div class="quest-card">
-                <h3><i class="fa-solid fa-ruler-combined"></i> 任務二：DBH 胸高直徑與固碳量計算</h3>
-                <p>量測代表樹木地上 1.3m 處之胸高直徑 (DBH)，體驗碳匯估測：</p>
-                <div class="calc-box">
-                    <input type="number" id="dbhInput" placeholder="輸入 DBH (cm)" value="25">
-                    <button onclick="calculateCarbon()">試算碳匯</button>
-                    <div class="calc-result" id="carbonResult">估算固碳量: ~147.2 kg</div>
+            <!-- 任務一 -->
+            <div class="quest-card active-quest" id="qCard1">
+                <div class="quest-header">
+                    <h3><i class="fa-solid fa-camera"></i> 任務一：iNaturalist 物種辨識</h3>
+                    <span class="status-badge" id="qStatus1">進行中</span>
+                </div>
+                <p>運用 iNaturalist 進行辨識，採集木本、灌木與草本三種植物資料。</p>
+                <div class="interactive-area">
+                    <div class="plant-tags">
+                        <span class="plant-tag" id="tagWood">木本 (未解鎖)</span>
+                        <span class="plant-tag" id="tagShrub">灌木 (未解鎖)</span>
+                        <span class="plant-tag" id="tagHerb">草本 (未解鎖)</span>
+                    </div>
+                    <button class="action-btn" id="btnQ1" onclick="doTask1()">拍攝辨識植物</button>
                 </div>
             </div>
 
-            <div class="quest-card">
-                <h3><i class="fa-solid fa-database"></i> 任務三：10筆標準化資料規範</h3>
-                <p>建置包含 GPS 定位、照片、DBH 量測的標準化名錄，目標綜合評分達 80% 以上！</p>
+            <!-- 任務二 -->
+            <div class="quest-card" id="qCard2">
+                <div class="quest-header">
+                    <h3><i class="fa-solid fa-ruler-combined"></i> 任務二：DBH 胸高直徑與固碳量計算</h3>
+                    <span class="status-badge" id="qStatus2">未解鎖</span>
+                </div>
+                <p>量測代表樹木地上 1.3m 處之胸高直徑 (DBH)，輸入數據完成碳匯估測：</p>
+                <div class="interactive-area">
+                    <div class="calc-box">
+                        <input type="number" id="dbhInput" placeholder="輸入 DBH (cm)" value="25">
+                        <button class="action-btn" onclick="doTask2()">計算固碳量並解鎖</button>
+                    </div>
+                    <div style="margin-top:8px; font-weight:bold; color:var(--primary);" id="carbonResult"></div>
+                </div>
+            </div>
+
+            <!-- 任務三 -->
+            <div class="quest-card" id="qCard3">
+                <div class="quest-header">
+                    <h3><i class="fa-solid fa-database"></i> 任務三：10筆標準化資料規範</h3>
+                    <span class="status-badge" id="qStatus3">未解鎖</span>
+                </div>
+                <p>上傳包含 GPS、照片、DBH 的 10 筆標準化資料名錄，評分達 80% 以上！</p>
+                <div class="interactive-area">
+                    <button class="action-btn" onclick="doTask3()">建置 10 筆標準資料庫</button>
+                </div>
             </div>
         </div>
 
-        <button class="big-start-btn" onclick="switchPage('gamePage')">
-            <i class="fa-solid fa-play"></i> 開啟綠葉防衛戰（射擊挑戰）
+        <button class="big-start-btn" id="bigStartBtn" onclick="switchPage('gamePage')">
+            <i class="fa-solid fa-lock"></i> 請先完成前面所有任務
         </button>
     </div>
 
-    <!-- 綠葉防衛戰（植物飛刀/精準射擊）遊戲頁 -->
+    <!-- 射擊遊戲頁 -->
     <div class="page" id="gamePage">
         <div class="game-dashboard">
             <div class="stat-box">
@@ -378,13 +475,11 @@
             <h2 id="questionText">看清題目，點擊正確的綠葉標籤擊破它！</h2>
         </div>
 
-        <div class="stage-container" id="stage">
-            <!-- 綠葉目標動態生成 -->
-        </div>
+        <div class="stage-container" id="stage"></div>
 
         <div class="control-panel">
             <button class="btn" id="startBtn" onclick="startGame()">開始綠葉防衛戰</button>
-            <button class="btn" style="background:#6c757d; margin-left:10px;" onclick="switchPage('learnPage')">返回任務說明</button>
+            <button class="btn" style="background:#6c757d; margin-left:10px;" onclick="switchPage('learnPage')">返回任務關卡</button>
         </div>
     </div>
 
@@ -399,6 +494,65 @@
     </div>
 
     <script>
+        let task1Progress = 0;
+        let task2Done = false;
+        let task3Done = false;
+
+        function doTask1() {
+            task1Progress++;
+            if(task1Progress === 1) {
+                document.getElementById('tagWood').classList.add('found');
+                document.getElementById('tagWood').innerText = '✓ 木本 (榕樹)';
+            } else if(task1Progress === 2) {
+                document.getElementById('tagShrub').classList.add('found');
+                document.getElementById('tagShrub').innerText = '✓ 灌木 (杜鵑)';
+            } else if(task1Progress >= 3) {
+                document.getElementById('tagHerb').classList.add('found');
+                document.getElementById('tagHerb').innerText = '✓ 草本 (車前草)';
+                
+                document.getElementById('qCard1').className = 'quest-card completed';
+                document.getElementById('qStatus1').innerText = '✓ 已完成';
+                document.getElementById('btnQ1').innerText = '辨識完畢';
+                document.getElementById('btnQ1').disabled = true;
+
+                // 解鎖任務二
+                document.getElementById('qCard2').className = 'quest-card active-quest';
+                document.getElementById('qStatus2').innerText = '進行中';
+            }
+        }
+
+        function doTask2() {
+            if(task1Progress < 3) return;
+            let dbh = parseFloat(document.getElementById('dbhInput').value) || 25;
+            let carbon = (Math.pow(dbh, 2) * 0.235).toFixed(1);
+            document.getElementById('carbonResult').innerText = `估算固碳量: ~${carbon} kg (量測驗證成功)`;
+            
+            task2Done = true;
+            document.getElementById('qCard2').className = 'quest-card completed';
+            document.getElementById('qStatus2').innerText = '✓ 已完成';
+
+            // 解鎖任務三
+            document.getElementById('qCard3').className = 'quest-card active-quest';
+            document.getElementById('qStatus3').innerText = '進行中';
+        }
+
+        function doTask3() {
+            if(!task2Done) return;
+            task3Done = true;
+            document.getElementById('qCard3').className = 'quest-card completed';
+            document.getElementById('qStatus3').innerText = '✓ 已完成 (評分 92%)';
+
+            // 解鎖終極射擊遊戲
+            let navBtn = document.getElementById('navGameBtn');
+            navBtn.className = 'nav-btn unlocked';
+            navBtn.innerHTML = '<i class="fa-solid fa-bullseye"></i> 進入射擊遊戲';
+            navBtn.onclick = () => switchPage('gamePage');
+
+            let bigBtn = document.getElementById('bigStartBtn');
+            bigBtn.className = 'big-start-btn unlocked';
+            bigBtn.innerHTML = '<i class="fa-solid fa-play"></i> 開啟綠葉防衛戰（射擊挑戰）';
+        }
+
         const questions = [
             { q: "專案中 DBH 量測是指樹木的什麼？", a: "胸高直徑", opt: ["胸高直徑", "樹冠寬度", "根系深度", "樹葉長度"] },
             { q: "本專案主要使用的辨識 App 是？", a: "iNaturalist", opt: ["iNaturalist", "PlantNet", "Seek", "Google Lens"] },
@@ -415,13 +569,8 @@
         let currentQ = null;
         let gameActive = false;
 
-        function calculateCarbon() {
-            let dbh = parseFloat(document.getElementById('dbhInput').value) || 0;
-            let carbon = (Math.pow(dbh, 2) * 0.235).toFixed(1);
-            document.getElementById('carbonResult').innerText = `估算固碳量: ~${carbon} kg`;
-        }
-
         function switchPage(pageId) {
+            if(pageId === 'gamePage' && !task3Done) return;
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             window.scrollTo(0,0);
@@ -455,11 +604,9 @@
 
         function spawnTargets() {
             if(!gameActive) return;
-
             const stage = document.getElementById('stage');
             stage.innerHTML = '';
 
-            // 混合選項並生成綠葉氣球
             let shuffledOpts = [...currentQ.opt].sort(() => Math.random() - 0.5).slice(0, 3);
             if(!shuffledOpts.includes(currentQ.a)) shuffledOpts[0] = currentQ.a;
             shuffledOpts.sort(() => Math.random() - 0.5);
@@ -473,7 +620,6 @@
 
                 leaf.addEventListener('pointerdown', (e) => {
                     if(!gameActive) return;
-                    
                     if(txt === currentQ.a) {
                         combo++;
                         let pts = 100 + (combo * 15);
@@ -483,14 +629,12 @@
                         combo = 0;
                         showEffect(e.clientX, e.clientY, `X`);
                     }
-
                     document.getElementById('score').innerText = score;
                     document.getElementById('combo').innerText = combo;
 
                     nextQuestion();
                     spawnTargets();
                 });
-
                 stage.appendChild(leaf);
             });
 
